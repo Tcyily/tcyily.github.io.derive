@@ -21,4 +21,15 @@ public static class GameHelper
         return uiButton;
     }
 
+    public static GameObject GetObjectByName(string name)
+    {
+        GameObject ob = GameApp.name_2_object_[name];
+        if (ob == null)
+        {
+            ob = GameObject.Find(name);
+            if (ob == null) Debug.LogError("Error:" + name + "is NOT EXIST"); 
+            GameApp.name_2_object_[name] = ob;
+        }
+        return ob;
+    }
 }

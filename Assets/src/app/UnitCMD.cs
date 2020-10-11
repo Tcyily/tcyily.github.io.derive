@@ -1,26 +1,26 @@
 ﻿using UnityEngine;
 public class UnitCMD
 {
-    private int __move_dir = 0;
-    private float __move_dis = 0f;
-    private int __rotate_dir = 0;
-    private float __rotate_dis = 0f;
+    private int __move_dir_cmd = 0;
+    private int __rotate_dir_cmd = 0;
 
-    public int move_dir_ { get { return __move_dir; } set { __move_dir = value >= 0 ? value : 0; } }
-    public float move_dist_ { get { return __move_dis; } set { __move_dis = value >= 0 ? value : 0; } }
-
-    public float rotate_dist_ { get { return __rotate_dis; } set { __rotate_dis = value >= 0 ? value : 0; } }
-    public int rotate_dir_ { get { return __rotate_dir; } set { __rotate_dir = value >= 0 ? value : 0; } }
-
-    private Vector3 GetMoveDir()
+    /// <summary>
+    /// 构造函数：下面通过MOVE_DIR_CMD/ROTATE_DIR_CMD位运算进行 格式化 操作指令
+    /// </summary>
+    /// <param name="move_cmd"></param>
+    /// <param name="rotate_cmd"></param>
+    public UnitCMD(int move_cmd, int rotate_cmd)
+    {
+        __move_dir_cmd = move_cmd;
+        __rotate_dir_cmd = rotate_cmd;
+    }
+    /// 下面通过MOVE_DIR_CMD/ROTATE_DIR_CMD位运算进行 解析 指令    
+    public Vector3 GetMoveDir()
     {
         Vector3 dir = Vector3.zero;
+        dir.x = ((__move_dir_cmd & (int)DefineConst.MOVE_DIR_CMD.RIGHT) -(__move_dir_cmd & (int)DefineConst.MOVE_DIR_CMD.LEFT)) | 0;
+        dir.y = ((__move_dir_cmd & (int)DefineConst.MOVE_DIR_CMD.UP) - (__move_dir_cmd & (int)DefineConst.MOVE_DIR_CMD.DOWN)) | 0;
+        dir.z = (__move_dir_cmd & (int)DefineConst.MOVE_DIR_CMD.JUMP) + (__move_dir_cmd & (int)DefineConst.MOVE_DIR_CMD.SQUAT);
         return dir;
-    }
-
-    private Vector3 GetMoveOffset()
-    {
-        Vector3 offset = Vector3.zero;
-        return offset;
     }
 }

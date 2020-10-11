@@ -9,6 +9,7 @@ using System.Reflection;
 
 public class GameApp
 {
+    public static Dictionary<string, GameObject> name_2_object_;
     public static Dictionary<string, Dictionary<int, dynamic>> DataConf_ = DataConf.data_;
     /// <summary>
     /// 初始化所有md/ctl/data
