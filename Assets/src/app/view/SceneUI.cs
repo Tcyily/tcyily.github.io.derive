@@ -1,24 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
-public class SceneUI
+public class SceneUI : MonoBehaviour
 {
-    [RuntimeInitializeOnLoadMethod]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void __OnSceneChange()
     {
-        Debug.Log("The Scene Had Changed To：" + SceneManager.GetActiveScene().name);
-        Debug.Log("is out ");
         __Init();
     }
 
+    private static GameObject canvas;
     private static void __Init()
     {
-        Debug.Log("is me ");
-        foreach (dynamic value in GameApp.DataConf_["NavicatResource"])
+        canvas = GameObject.Find("/Canvas") ?? new GameObject("Canvas");
+        canvas.layer = (int)DefineConst.Layer_Name.UI;
+        DontDestroyOnLoad(canvas);
+        bool cmd;
+        cmd = canvas.GetComponent<Canvas>() ?? canvas.AddComponent<Canvas>();
+        cmd = canvas.GetComponent<CanvasScaler>() ?? canvas.AddComponent<CanvasScaler>();
+        cmd = canvas.GetComponent<GraphicRaycaster>() ?? canvas.AddComponent<GraphicRaycaster>();
+        foreach (dynamic pairs in GameApp.DataConf_["NavicatResource"])
         {
-            //TODO:生成跳转ui
+            string scene_name = pairs.Value.sceneName;
+            GameHelper.CreateButton(canvas);
         }
     }
     //private void __

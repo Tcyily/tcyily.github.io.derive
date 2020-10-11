@@ -16,6 +16,8 @@ public class GameApp
     [RuntimeInitializeOnLoadMethod]
     private static void __init()
     {
+        SceneManager.sceneLoaded += __SceneLoadedCallback;
+
         __initdata();
         __InitFinnished();
     }
@@ -82,7 +84,7 @@ public class GameApp
                     field_info.SetValue(line, Convert.ChangeType(attr_value.ToString(), field_info.FieldType));
                 }
             }
-            table[table.Count + 1] = line; 
+            table[table.Count + 1] = line; //TODO:以行号为key？修改为以行中第一列为key？
         }
     }
     private static void __InitFinnished()
@@ -91,4 +93,9 @@ public class GameApp
         aop.allowSceneActivation = true;
     }
 
+    private static void __SceneLoadedCallback(Scene scene, LoadSceneMode sceneType)
+    {
+        GameObject camera = GameObject.Find("Main Camera");
+        camera.GetComponent<Camera>().cullingMask &= ~(1 << (int)DefineConst.Layer_Name.UI);
+    }
 }

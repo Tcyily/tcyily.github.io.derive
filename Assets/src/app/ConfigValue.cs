@@ -2,17 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConfigValue : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+public class ConfigValue {
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

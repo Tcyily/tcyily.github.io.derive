@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Z_Mono_Logger : MonoBehaviour
+public class test : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
     {
-        
+        Debug.Log(transform.name);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 }
