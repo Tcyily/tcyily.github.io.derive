@@ -8,7 +8,11 @@ public static class UnitMng
     {
         GameObject unit = GameHelper.GetObjectByName(name);
         UnitController unit_controller = unit.GetComponent<UnitController>();
-        if (unit_controller == null) Debug.LogError(name + "no Component UnitController");
+        if (unit_controller == null)
+        {
+            unit.AddComponent<UnitController>();
+            unit_controller = unit.GetComponent<UnitController>();
+        }
         unit_controller.cmd_ = new UnitCMD(move_cmd, rotate_cmd);
     }
 }

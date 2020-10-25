@@ -23,7 +23,8 @@ public static class GameHelper
 
     public static GameObject GetObjectByName(string name)
     {
-        GameObject ob = GameApp.name_2_object_[name];
+        GameObject ob = null;
+        GameApp.name_2_object_.TryGetValue(name, out ob);
         if (ob == null)
         {
             ob = GameObject.Find(name);
