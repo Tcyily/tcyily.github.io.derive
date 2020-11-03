@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class WaterDataTransfer : MonoBehaviour
 {
-    private GameObject __camera_;
+    private GameObject __camera_ob_;
+    private RenderTexture __camera_texture_;
     void Start()
     {
         if (transform.gameObject.layer != (int)DefineConst.Layer_Name.Water)
@@ -13,22 +14,35 @@ public class WaterDataTransfer : MonoBehaviour
             return;
         }
 
-        if(__camera_ == null)
+        if(__camera_ob_ == null)
         {
-            __camera_ = new GameObject();
-            __camera_.AddComponent<Camera>();
-            Camera camera = __camera_.GetComponent<Camera>();
+            __camera_ob_ = new GameObject();
+            __camera_ob_.AddComponent<Camera>();
+            Camera camera = __camera_ob_.GetComponent<Camera>();
+
             camera.CopyFrom(Camera.main);
             camera.cullingMask = ~(1 << (int)DefineConst.Layer_Name.Water);
+            camera.targetTexture = __camera_texture_;
 
             Matrix4x4 mir_matrix = GetMirrorMatrix();
-            __camera_.transform.position = mir_matrix.MultiplyPoint(Camera.main.transform.position);
-            __camera_.transform.forward = mir_matrix.MultiplyVector(Camera.main.transform.forward);
+            camera.transform.position = mir_matrix.MultiplyPoint(Camera.main.transform.position);
+            camera.transform.forward = mir_matrix.MultiplyVector(Camera.main.transform.forward);
+            camera.worldToCameraMatrix = Camera.main.worldToCameraMatrix * mir_matrix;
+            GL.invertCulling = true;
+
+            //TODO:斜裁剪
+            //__camera_ob_.GetComponent<Camera>()
+            //Material[] materials = GetComponent<Renderer>().sharedMaterials;
+            //foreach(Material material in materials)
+            //{
+
+            //}
         }
     }
 
     private Matrix4x4 GetMirrorMatrix()
     {
+        //https://www.cnblogs.com/wantnon/p/5630915.html
         Vector3 normal = transform.up;
         float dis = Vector3.Dot(-normal,transform.position);
         Matrix4x4 martix = new Matrix4x4();
