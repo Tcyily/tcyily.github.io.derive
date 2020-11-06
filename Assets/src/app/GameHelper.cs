@@ -47,12 +47,17 @@ public static class GameHelper
         file.Close();
         Texture2D.DestroyImmediate(tex);
         tex = null;
+        Debug.Log(path + "/" + pngName + ".png " + "save success");
         return true;
     }
 
     public static bool SaveTexture(Texture tex, string path, string pngName)
     {
         return SaveTexture(TextureToTexture2D(tex), path, pngName);
+    }
+    public static bool SaveTexture(RenderTexture tex, string path, string pngName)
+    {
+        return SaveTexture(RenderTextureToTexture2D(tex), path, pngName);
     }
 
     /// <summary>
@@ -90,5 +95,19 @@ public static class GameHelper
         ti.isReadable = true;
         UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(texture2d));
         return texture2d;
+    }
+    /// <summary>
+    /// RenderTexture转Texture2D
+    /// </summary>
+    /// <param name="rTex"></param>
+    /// <returns></returns>
+    public static Texture2D RenderTextureToTexture2D(RenderTexture rt)
+    {
+        RenderTexture currentActiveRT = RenderTexture.active;
+        RenderTexture.active = rt;
+        Texture2D tex = new Texture2D(rt.width, rt.height);
+        tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
+        RenderTexture.active = currentActiveRT;
+        return tex;
     }
 }

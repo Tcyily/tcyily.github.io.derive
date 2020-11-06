@@ -44,5 +44,5 @@
         MAIN = 0,
     }
 
-    public static string DEBUG_TEXTURE_PATH = "./Assets/texture/debug";
+    public static string DEBUG_TEXTURE_PATH = "./Assets/debug/texture";
 }

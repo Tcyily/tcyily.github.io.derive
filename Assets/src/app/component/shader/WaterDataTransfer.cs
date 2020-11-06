@@ -5,47 +5,55 @@ using UnityEngine;
 public class WaterDataTransfer : MonoBehaviour
 {
     private GameObject __camera_ob_;
-    private RenderTexture __camera_texture_;
+    private Camera __camera_;
+    private RenderTexture __camera_texture_; //= new RenderTexture(256, 256, 24);
     public Material water_effect_material_;
     void Start()
+    {
+        InitMirrorCamera();
+        CaptureScreen();
+    }
+
+    private void InitMirrorCamera()
     {
         if (transform.gameObject.layer != (int)DefineConst.Layer_Name.Water)
         {
             Debug.LogError("WaterDataTransfer Should be added in 'Water Layer'");
             return;
         }
-
-        if(__camera_ob_ == null)
+        if (__camera_ == null)
         {
-            __camera_ob_ = new GameObject();
-            __camera_ob_.AddComponent<Camera>();
-            Camera camera = __camera_ob_.GetComponent<Camera>();
+            __camera_texture_ = new RenderTexture(256, 256, 16);
+            __camera_ = new GameObject().AddComponent<Camera>();
 
-            camera.CopyFrom(Camera.main);
-            camera.depth = (int)DefineConst.CAMERA_DEPTH.MIRROR;
-            camera.cullingMask = ~(1 << (int)DefineConst.Layer_Name.Water);
-            camera.targetTexture = __camera_texture_;
+            __camera_.CopyFrom(Camera.main);
+            __camera_.depth = (int)DefineConst.CAMERA_DEPTH.MIRROR;
+            __camera_.cullingMask = ~(1 << (int)DefineConst.Layer_Name.Water);
+            __camera_.targetTexture = __camera_texture_;
 
             //镜面反射
             Matrix4x4 mir_matrix = GetMirrorMatrix();
-            camera.transform.position = mir_matrix.MultiplyPoint(Camera.main.transform.position);
-            camera.transform.forward = mir_matrix.MultiplyVector(Camera.main.transform.forward);
-            camera.worldToCameraMatrix = Camera.main.worldToCameraMatrix * mir_matrix;
+            __camera_.transform.position = mir_matrix.MultiplyPoint(Camera.main.transform.position);
+            __camera_.transform.forward = mir_matrix.MultiplyVector(Camera.main.transform.forward);
+            __camera_.worldToCameraMatrix = Camera.main.worldToCameraMatrix * mir_matrix;
             GL.invertCulling = true;
             //斜裁剪
-            Vector4 clip_plane = GetPlaneInCameraSpace(camera, transform.position, transform.up);
-            Matrix4x4 matrix4X4 = camera.projectionMatrix;
-            camera.projectionMatrix = GetProjectionMatrixInPlane(matrix4X4, clip_plane);
-            //设置渲染目标
-            camera.Render();
-            water_effect_material_.mainTexture = __camera_texture_;
-            //Break Point:__camera_texture_ is NULL
-            Debug.Log(__camera_texture_ == null);
-            var flag = GameHelper.SaveTexture(__camera_texture_, DefineConst.DEBUG_TEXTURE_PATH, "Mirror_Texture");
-            Debug.Log(flag ? "success" : "fail");
+            Vector4 clip_plane = GetPlaneInCameraSpace(__camera_, transform.position, transform.up);
+            Matrix4x4 matrix4X4 = __camera_.projectionMatrix;
+            __camera_.projectionMatrix = GetProjectionMatrixInPlane(matrix4X4, clip_plane);
         }
     }
+    private void CaptureScreen()
+    {
+        //设置渲染目标
+        __camera_.Render();
+        //water_effect_material_.mainTexture = __camera_texture_;
+        water_effect_material_.SetTexture("__mirror_tex_", __camera_texture_);
+        GameHelper.SaveTexture(__camera_texture_, DefineConst.DEBUG_TEXTURE_PATH, "Mirror_Texture");
+    }
 
+
+    /*************************辅助函数*****************************/
     //Link:https://www.cnblogs.com/wantnon/p/5630915.html
     private Matrix4x4 GetMirrorMatrix()
     {
