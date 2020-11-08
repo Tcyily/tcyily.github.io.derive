@@ -47,7 +47,7 @@ public static class GameHelper
         file.Close();
         Texture2D.DestroyImmediate(tex);
         tex = null;
-        Debug.Log(path + "/" + pngName + ".png " + "save success");
+        //Debug.Log(path + "/" + pngName + ".png " + "save success");
         return true;
     }
 
