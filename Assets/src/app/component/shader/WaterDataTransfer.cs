@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class WaterDataTransfer : MonoBehaviour
 {
-    private GameObject __camera_ob_;
     private Camera __camera_;
     private RenderTexture __camera_texture_; //= new RenderTexture(256, 256, 24);
     public Material water_effect_material_;
@@ -15,13 +14,6 @@ public class WaterDataTransfer : MonoBehaviour
         //CaptureScreen();
     }
 
-    private void Update()
-    {
-        if (frame_cnt_ % 15 == 0)
-        {
-            CaptureScreen();
-        }
-    }
     private void InitMirrorCamera()
     {
         if (transform.gameObject.layer != (int)DefineConst.Layer_Name.Water)
@@ -33,14 +25,15 @@ public class WaterDataTransfer : MonoBehaviour
         {
             __camera_texture_ = new RenderTexture(256, 256, 16);
             __camera_ = new GameObject().AddComponent<Camera>();
-
             __camera_.CopyFrom(Camera.main);
             __camera_.depth = (int)DefineConst.CAMERA_DEPTH.MIRROR;
-            //__camera_.cullingMask = ~(1 << (int)DefineConst.Layer_Name.Water);
+            __camera_.cullingMask = ~(1 << (int)DefineConst.Layer_Name.Water);
             __camera_.targetTexture = __camera_texture_;
         }
+        Camera.onPreCull += delegate (Camera cam) { GL.invertCulling = true; };
+        Camera.onPostRender += delegate (Camera cam) { GL.invertCulling = false; };
     }
-    private void CaptureScreen()
+    public void OnWillRenderObject()
     {
         //镜面反射
         Matrix4x4 mir_matrix = GetMirrorMatrix();
@@ -48,13 +41,12 @@ public class WaterDataTransfer : MonoBehaviour
         __camera_.transform.position = mir_matrix.MultiplyPoint(Camera.main.transform.position);
         __camera_.transform.forward = mir_matrix.MultiplyVector(Camera.main.transform.forward);
 
-        ////斜裁剪
-        //Vector4 clip_plane = GetPlaneInCameraSpace(__camera_, transform.position, transform.up);
-        //Matrix4x4 matrix4X4 = __camera_.projectionMatrix;
-        //__camera_.projectionMatrix = GetProjectionMatrixInPlane(matrix4X4, clip_plane);
+        //斜裁剪
+        Vector4 clip_plane = GetPlaneInCameraSpace(__camera_, transform.position, transform.up);
+        Matrix4x4 matrix4X4 = __camera_.projectionMatrix;
+        __camera_.projectionMatrix = GetProjectionMatrixInPlane(matrix4X4, clip_plane);
 
         //渲染
-        GL.invertCulling = true;
         __camera_.Render();
         GL.invertCulling = false;
         //water_effect_material_.mainTexture = __camera_texture_;
@@ -62,7 +54,6 @@ public class WaterDataTransfer : MonoBehaviour
         //debug贴图
         GameHelper.SaveTexture(__camera_texture_, DefineConst.DEBUG_TEXTURE_PATH, "Mirror_Texture");
     }
-
 
     /*************************辅助函数*****************************/
     //Link:https://www.cnblogs.com/wantnon/p/5630915.html
