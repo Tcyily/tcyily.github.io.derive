@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class WaterDataTransfer : MonoBehaviour
 {
-    private const float TEXTURE_HEIGHT_SIZE = 100;
+    public const float TEXTURE_HEIGHT_SIZE = 75;
     private Camera __camera_;
     private RenderTexture __camera_texture_; //= new RenderTexture(256, 256, 24);
     public Material water_effect_material_;
@@ -56,8 +56,8 @@ public class WaterDataTransfer : MonoBehaviour
 
         //渲染
         __camera_.Render();
-        water_effect_material_.mainTexture = __camera_texture_;
-        water_effect_material_.SetTexture("__mirror_tex_", __camera_texture_);
+        water_effect_material_.SetTexture("_MirrorTex", __camera_texture_);
+        //water_effect_material_.mainTexture = __camera_texture_;
         //debug贴图
         GameHelper.SaveTexture(__camera_texture_, DefineConst.DEBUG_TEXTURE_PATH, "Mirror_Texture");
     }

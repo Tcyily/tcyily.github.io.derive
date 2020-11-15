@@ -1,6 +1,6 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "Custom/Water"
+Shader "WaterEffect/MirrorEffect"
 {
     Properties
     {
@@ -45,19 +45,23 @@ Shader "Custom/Water"
                 float2 uv_main : TEXCOORD1;
                 float2 uv_wave : TEXCOORD2;
                 float2 uv_mirror : TEXCOORD3;
+                float4 pos_screen: TexCoord4;
             };
 
             v2f vert(a2v v){
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.position);
-                o.world_normal = UnityObjectToWorldNormal(v.normal);
-                o.uv_main = TRANSFORM_TEX(v.uv_main, _MainTex);
-                o.uv_wave = TRANSFORM_TEX(v.uv_wave, _WaveTex);
-                o.uv_mirror = TRANSFORM_TEX(v.uv_mirror, _MirrorTex);
+                o.pos_screen = ComputeScreenPos(o.pos);
+                //o.pos = UnityObjectToClipPos(v.position);
+                //o.world_normal = UnityObjectToWorldNormal(v.normal);
+                //o.uv_main = TRANSFORM_TEX(v.uv_main, _MainTex);
+                //o.uv_wave = TRANSFORM_TEX(v.uv_wave, _WaveTex);
+                //o.uv_mirror = TRANSFORM_TEX(v.uv_mirror, _MirrorTex);
                 return o;
             }
             fixed4 frag(v2f i) : SV_Target{
-                return fixed4(0.0f, 0.0f, 0.0f, 1.0f);
+                half4 reflectionColor = tex2D(_MirrorTex, i.pos_screen.xy/i.pos_screen.w);
+                return reflectionColor;
             }
             ENDCG
         }
