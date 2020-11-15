@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class WaterDataTransfer : MonoBehaviour
 {
+    private const float TEXTURE_HEIGHT_SIZE = 100;
     private Camera __camera_;
     private RenderTexture __camera_texture_; //= new RenderTexture(256, 256, 24);
     public Material water_effect_material_;
-    private int frame_cnt_ = 0;
     void Start()
     {
         InitMirrorCamera();
-        //CaptureScreen();
     }
 
     private void InitMirrorCamera()
@@ -23,16 +22,24 @@ public class WaterDataTransfer : MonoBehaviour
         }
         if (__camera_ == null)
         {
-            __camera_texture_ = new RenderTexture(256, 256, 16);
+            float aspect = Camera.main.aspect;
+            __camera_texture_ = new RenderTexture((int)(aspect * TEXTURE_HEIGHT_SIZE), (int)TEXTURE_HEIGHT_SIZE, -10);
             __camera_ = new GameObject().AddComponent<Camera>();
             __camera_.CopyFrom(Camera.main);
             __camera_.depth = (int)DefineConst.CAMERA_DEPTH.MIRROR;
             __camera_.cullingMask = ~(1 << (int)DefineConst.Layer_Name.Water);
             __camera_.targetTexture = __camera_texture_;
         }
-        Camera.onPreCull += delegate (Camera cam) { GL.invertCulling = true; };
-        Camera.onPostRender += delegate (Camera cam) { GL.invertCulling = false; };
+        Camera.onPreCull += SetInvertCullingTrue;
+        Camera.onPostRender += SetInvertCullingFalse;
     }
+
+    private void OnDestroy()
+    {
+        Camera.onPreCull -= SetInvertCullingTrue;
+        Camera.onPostRender -= SetInvertCullingFalse;
+    }
+
     public void OnWillRenderObject()
     {
         //镜面反射
@@ -43,14 +50,14 @@ public class WaterDataTransfer : MonoBehaviour
 
         //斜裁剪
         Vector4 clip_plane = GetPlaneInCameraSpace(__camera_, transform.position, transform.up);
+        //__camera_.projectionMatrix = __camera_.CalculateObliqueMatrix(clip_plane);
         Matrix4x4 matrix4X4 = __camera_.projectionMatrix;
         __camera_.projectionMatrix = GetProjectionMatrixInPlane(matrix4X4, clip_plane);
 
         //渲染
         __camera_.Render();
-        GL.invertCulling = false;
-        //water_effect_material_.mainTexture = __camera_texture_;
-        //water_effect_material_.SetTexture("__mirror_tex_", __camera_texture_);
+        water_effect_material_.mainTexture = __camera_texture_;
+        water_effect_material_.SetTexture("__mirror_tex_", __camera_texture_);
         //debug贴图
         GameHelper.SaveTexture(__camera_texture_, DefineConst.DEBUG_TEXTURE_PATH, "Mirror_Texture");
     }
@@ -59,7 +66,7 @@ public class WaterDataTransfer : MonoBehaviour
     //Link:https://www.cnblogs.com/wantnon/p/5630915.html
     private Matrix4x4 GetMirrorMatrix()
     {
-        Vector3 normal = transform.up;
+        Vector3 normal = transform.up.normalized;
         float dis = Vector3.Dot(-normal,transform.position);//平面上所有的点都由过原点的平行面平移 n·p 而来， 故而 d 为 -n·p
         Matrix4x4 martix = new Matrix4x4();
 
@@ -89,17 +96,16 @@ public class WaterDataTransfer : MonoBehaviour
     private Vector4 GetPlaneInCameraSpace(Camera camera, Vector3 pos, Vector3 normal)
     {
         Matrix4x4 w2c_matrix = camera.worldToCameraMatrix;
-        float dis = -Vector3.Dot(pos, normal);
         Vector3 w_normal = w2c_matrix.MultiplyVector(normal);
-        return new Vector4(w_normal.x, w_normal.y, w_normal.z, dis);
+        return new Vector4(w_normal.x, w_normal.y, w_normal.z, -Vector3.Dot(w2c_matrix.MultiplyPoint(pos), w2c_matrix.MultiplyVector(normal)));
     }
 
     //Link:http://terathon.com/lengyel/Lengyel-Oblique.pdf
     private Matrix4x4 GetProjectionMatrixInPlane(Matrix4x4 projection, Vector4 clip_plane)
     {
         Vector4 q = projection.inverse * new Vector4(
-            Mathf.Sign(clip_plane.x),
-            Mathf.Sign(clip_plane.y),
+            sign(clip_plane.x),
+            sign(clip_plane.y),
             1.0f,
             1.0f
         );
@@ -110,5 +116,20 @@ public class WaterDataTransfer : MonoBehaviour
         projection[10] = c.z - projection[11];
         projection[14] = c.w - projection[15];
         return projection;
+    }
+
+    private int sign(float num)
+    {
+        if (num == 0f) return 0;
+        if (num > 0f) return 1;
+        else return - 1;
+    }
+    private void SetInvertCullingTrue(Camera cam)
+    {
+        GL.invertCulling = true;
+    }
+    private void SetInvertCullingFalse(Camera cam)
+    {
+        GL.invertCulling = false;
     }
 }
