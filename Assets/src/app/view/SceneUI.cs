@@ -23,8 +23,8 @@ public class SceneUI : MonoBehaviour
         cmd = canvas.GetComponent<GraphicRaycaster>() ?? canvas.AddComponent<GraphicRaycaster>();
         foreach (dynamic pairs in GameApp.DataConf_["NavicatResource"])
         {
-            string scene_name = pairs.Value.sceneName;
-            GameHelper.CreateButton(canvas);
+            //string scene_name = pairs.Value.sceneName;
+            //GameHelper.CreateButton(canvas);
         }
     }
     //private void __

@@ -12,7 +12,6 @@ public class FPSInput : MonoBehaviour
     public float jumpSpeed =49.0f;
     public float check;
     RaycastHit hit;
-    [SerializeField] private GameObject firePrefab;
     private GameObject _fire;
     private CharacterController _charController;
 
@@ -63,12 +62,6 @@ public class FPSInput : MonoBehaviour
             }
         }
         
-        if(_charController.isGrounded&&(Input.GetKey(KeyCode.W)|| Input.GetKey(KeyCode.S)|| Input.GetKey(KeyCode.D)|| Input.GetKey(KeyCode.A)))
-        {
-            _fire = Instantiate(firePrefab )as GameObject;
-            _fire.transform.position = transform.position;
-        }
-
         movement.y = vertSpeed;
 
         movement *= Time.deltaTime;
