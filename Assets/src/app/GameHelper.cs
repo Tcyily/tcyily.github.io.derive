@@ -124,8 +124,8 @@ public static class GameHelper
     public static Vector4 GetPlaneInCameraSpace(Camera camera, Vector3 pos, Vector3 normal)
     {
         Matrix4x4 w2c_matrix = camera.worldToCameraMatrix;
-        Vector3 w_normal = w2c_matrix.MultiplyVector(normal);
-        return new Vector4(w_normal.x, w_normal.y, w_normal.z, -Vector3.Dot(w2c_matrix.MultiplyPoint(pos), w2c_matrix.MultiplyVector(normal)));
+        Vector3 c_normal = w2c_matrix.MultiplyVector(normal);
+        return new Vector4(c_normal.x, c_normal.y, c_normal.z, -Vector3.Dot(w2c_matrix.MultiplyPoint(pos), w2c_matrix.MultiplyVector(normal)));
     }
 
     /// <summary>

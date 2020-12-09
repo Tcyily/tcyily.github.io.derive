@@ -50,7 +50,6 @@ Shader "WaterEffect/MirrorEffect"
                 float4 pos : SV_POSITION;
                 float3 world_normal : TEXCOORD0;
                 float2 uv_wave : TEXCOORD1;
-                float2 uv_mirror : TEXCOORD2;
                 float4 pos_screen: TexCoord3;
                 float3 dir_world_view: Texcoord4;
             };
@@ -59,14 +58,20 @@ Shader "WaterEffect/MirrorEffect"
                 v2f o;
                 //common
                 o.world_normal = normalize(UnityObjectToWorldNormal(v.normal));
-                
+                //水波效果施工中
+                v.uv_wave.x += _Time.y / 5;
+                v.uv_wave.y += _Time.y/ 55;
+                v.vertex.y += tex2Dlod(_WaveTex, v.uv_wave)*3-2;
+                v.vertex.y += sin(dot(v.vertex.xz, tex2Dlod(_WaveTex, v.uv_wave).xy))*1/2;
+                v.vertex.y += sin(dot(v.vertex.xz, tex2Dlod(_WaveTex, v.uv_wave).xy))*1/4;
+                v.vertex.y += sin(dot(v.vertex.xz, tex2Dlod(_WaveTex, v.uv_wave).xy))*1/8;
+                v.vertex.y += sin(dot(v.vertex.xz, tex2Dlod(_WaveTex, v.uv_wave).xy))*1/12;
+                v.vertex.y -= 1;
+                o.uv_wave = TRANSFORM_TEX(v.uv_wave, _WaveTex);
                 //用于镜面反射(mirror)
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.pos_screen = ComputeScreenPos(o.pos);
 
-                o.uv_wave = TRANSFORM_TEX(v.uv_wave, _WaveTex);
-                half4 xx =tex2Dlod(_WaveTex, v.uv_wave);
-                //o.pos_screen.xy += sin(xx*_Time.y*_Time.y);
                 //用于菲涅尔效果(fresnel)
                 o.dir_world_view = normalize(WorldSpaceViewDir(v.vertex));
                 return o;
@@ -76,6 +81,7 @@ Shader "WaterEffect/MirrorEffect"
                 half4 refraction_color = tex2D(_RefractTex, i.pos_screen.xy/i.pos_screen.w);
                 float fresnel_factor = _fresnelBase + _fresnelScale * pow(1 - dot(i.world_normal, i.dir_world_view), _fresnelIndensity);//base + scale* (1-dot(n,v))^indensity
 
+                return tex2D(_WaveTex, i.uv_wave);
                 return lerp(refraction_color*_RefractFactor*2, reflection_color*_ReflectFactor*2, fresnel_factor);
             }
             ENDCG
