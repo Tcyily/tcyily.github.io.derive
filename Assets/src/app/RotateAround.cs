@@ -35,7 +35,7 @@ public class RotateAround : MonoBehaviour
             //Vector4 panel_ns = new Vector4(link_vec_ns.x, link_vec_ns.y, link_vec_ns.z, Vector3.Dot(link_vec_ns, target_pos_ns));
             Vector3 axis_temp = target_pos_ns - new Vector3(__mouse_hori_, __mouse_vert_, 0);
             link_vec_ns.Normalize();
-            axis_temp.Normalize();
+            axis_temp.Normalize();  
             Vector3 axis_around_ns = Vector3.Cross(link_vec_ns, axis_temp);
             //Debug.Log(transform.position);
             Vector3 axis_around_ws = transform.TransformVector(axis_around_ns);

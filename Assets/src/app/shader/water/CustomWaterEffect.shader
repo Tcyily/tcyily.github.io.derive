@@ -58,16 +58,7 @@ Shader "WaterEffect/MirrorEffect"
                 v2f o;
                 //common
                 o.world_normal = normalize(UnityObjectToWorldNormal(v.normal));
-                //水波效果施工中
-                v.uv_wave.x += _Time.y / 5;
-                v.uv_wave.y += _Time.y/ 55;
-                v.vertex.y += tex2Dlod(_WaveTex, v.uv_wave)*3-2;
-                v.vertex.y += sin(dot(v.vertex.xz, tex2Dlod(_WaveTex, v.uv_wave).xy))*1/2;
-                v.vertex.y += sin(dot(v.vertex.xz, tex2Dlod(_WaveTex, v.uv_wave).xy))*1/4;
-                v.vertex.y += sin(dot(v.vertex.xz, tex2Dlod(_WaveTex, v.uv_wave).xy))*1/8;
-                v.vertex.y += sin(dot(v.vertex.xz, tex2Dlod(_WaveTex, v.uv_wave).xy))*1/12;
-                v.vertex.y -= 1;
-                o.uv_wave = TRANSFORM_TEX(v.uv_wave, _WaveTex);
+
                 //用于镜面反射(mirror)
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.pos_screen = ComputeScreenPos(o.pos);
@@ -76,6 +67,7 @@ Shader "WaterEffect/MirrorEffect"
                 o.dir_world_view = normalize(WorldSpaceViewDir(v.vertex));
                 return o;
             }
+
             fixed4 frag(v2f i) : SV_Target{
                 half4 reflection_color = tex2D(_ReflectTex, i.pos_screen.xy/i.pos_screen.w);
                 half4 refraction_color = tex2D(_RefractTex, i.pos_screen.xy/i.pos_screen.w);
