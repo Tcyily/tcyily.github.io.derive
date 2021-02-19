@@ -54,10 +54,19 @@ Shader "WaterEffect/MirrorEffect"
                 float3 dir_world_view: Texcoord4;
             };
 
+            float Sinusoid(float A, float2 D, float4 pos, float w, float t, float offset){
+                return A * sin(dot(D.x * pos.x, D.y * pos.z) * w + t * offset);
+            }
+
             v2f vert(a2v v){
                 v2f o;
                 //common
+
                 o.world_normal = normalize(UnityObjectToWorldNormal(v.normal));
+
+                //水波效果施工中
+                o.uv_wave = TRANSFORM_TEX(v.uv_wave, _WaveTex);
+                v.vertex.y += Sinusoid(0.5f, float2(1.0f, 1.0f), v.vertex, 1.3376923f, _Time.y, 0.03125f);
 
                 //用于镜面反射(mirror)
                 o.pos = UnityObjectToClipPos(v.vertex);
@@ -74,6 +83,7 @@ Shader "WaterEffect/MirrorEffect"
                 float fresnel_factor = _fresnelBase + _fresnelScale * pow(1 - dot(i.world_normal, i.dir_world_view), _fresnelIndensity);//base + scale* (1-dot(n,v))^indensity
 
                 return tex2D(_WaveTex, i.uv_wave);
+                //return fixed4(i.pos.y/i.pos.w, i.pos.y/i.pos.w, i.pos.y/i.pos.w, 1.0f);
                 return lerp(refraction_color*_RefractFactor*2, reflection_color*_ReflectFactor*2, fresnel_factor);
             }
             ENDCG

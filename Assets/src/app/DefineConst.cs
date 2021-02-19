@@ -13,6 +13,7 @@ public class DefineConst
         IgnoreRaycast = 2,
         Water = 4,
         UI = 5,
+        FunnyBox = 9,
     }
 
     /// <summary>

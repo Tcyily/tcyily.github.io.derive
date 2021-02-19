@@ -90,7 +90,7 @@ public class GameApp
     }
     private static void __InitFinnished()
     {
-        AsyncOperation aop = SceneManager.LoadSceneAsync("Main");
+        AsyncOperation aop = SceneManager.LoadSceneAsync("FunnyBoxScene");
         aop.allowSceneActivation = true;
     }
 
