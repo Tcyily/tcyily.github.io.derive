@@ -9,6 +9,12 @@ EditorBuildSettings:
     path: Assets/res/scene/LoadingScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/res/scene/Main.unity
+    path: Assets/res/scene/WaterScene.unity
     guid: d1d858403702d664ba30f8ceeb0f4fb1
+  - enabled: 1
+    path: Assets/res/scene/FunnyBoxScene.unity
+    guid: 0a7ad76a3e93c9f40a5f37a7b8aafc88
+  - enabled: 1
+    path: Assets/res/scene/GameScene.unity
+    guid: 1db5a2c083fa376419f9be34f48d706a
   m_configObjects: {}
