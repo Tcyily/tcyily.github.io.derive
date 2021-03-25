@@ -342,3 +342,5 @@ MonoBehaviour:
   gzParent_: {fileID: 1895482300}
   gzPrefab_: {fileID: 8506069383734227511, guid: d7c5eaf6f29966243be41fe7babe9b1f,
     type: 3}
+  playerPrefab_: {fileID: 100076, guid: 69c3ed15e9d13481e8f7dc4db5532fb6, type: 3}
+  objectLayer_: {fileID: 1895482300}

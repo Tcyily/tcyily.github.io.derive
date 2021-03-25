@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class ControllerBase
 {
-    // Start is called before the first frame update
-    void Start()
+    private static ControllerBase instance = new ControllerBase();
+    private static ControllerBase instance_
     {
-        
+        get { return instance; }
+    }
+    private ControllerBase()
+    {
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

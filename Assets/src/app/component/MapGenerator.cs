@@ -12,7 +12,7 @@ public class MapGenerator : MonoBehaviour
     {
         {0,0,1,1,0},
         {1,0,1,1,0},
-        {1,0,0,1,0},
+        {1,0,1,0,1},
         {0,0,0,1,0},
         {0,1,1,1,0}
     };
@@ -21,10 +21,10 @@ public class MapGenerator : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(MapCreateing());
+        StartCoroutine(MapCreating());
     }
 
-    IEnumerator MapCreateing()
+    IEnumerator MapCreating()
     {
         int vertLen = mapData_.GetLength(0);
         int horiLen = mapData_.GetLength(1);
@@ -36,7 +36,9 @@ public class MapGenerator : MonoBehaviour
         {
             for(int j = 0; j < horiLen ; j++)
             {
-                Debug.Log(mapData_[i, j]);
+                if(mapData_[i,j] <= 0) {
+                    continue;
+                }
                 int idx = i * horiLen + j;
                 float offsetX = (j - centerX) * gzWidth;
                 float offsetY = (i - centerY) * gzHeight;
@@ -46,7 +48,19 @@ public class MapGenerator : MonoBehaviour
                 yield return new WaitForSeconds(0.25f);
             }
         }
+        StartCoroutine(PlayerCreating());
     }
+
+    //TODO:抽象到playerController
+    public GameObject playerPrefab_ = null;
+    public GameObject objectLayer_ = null;
+    IEnumerator PlayerCreating()
+    {
+        Vector3 pos = new Vector3(1.0f, 5.0f, -1.0f);
+        GameObject player = Instantiate(playerPrefab_, pos, Quaternion.Euler(Vector3.zero), objectLayer_.transform);
+        yield return 0;
+    }
+
 
     // Update is called once per frame
     void Update()

@@ -11,6 +11,9 @@ public class GameApp
 {
     public static Dictionary<string, GameObject> name_2_object_ = new Dictionary<string, GameObject>();
     public static Dictionary<string, Dictionary<int, dynamic>> DataConf_ = DataConf.data_;
+    public static EventSystem eventSystem_ = EventSystem.instance_; 
+    public static Dictionary<string, ControllerBase> ctrl_ = new Dictionary<string, ControllerBase>();
+    public static Dictionary<string, ModelBase> md_ = new Dictionary<string, ModelBase>();
     /// <summary>
     /// 初始化所有md/ctl/data
     /// </summary>
@@ -19,10 +22,16 @@ public class GameApp
     {
         SceneManager.sceneLoaded += __SceneLoadedCallback;
 
+        //全局管理器
+
+        //表格
         __initdata();
         __InitFinnished();
     }
 
+    /// <summary>
+    /// 初始化表格数据
+    /// </summary>
     private static void __initdata()
     {
         Dictionary<string, string> path = DataConf.path_;
